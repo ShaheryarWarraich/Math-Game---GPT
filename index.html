@@ -1,0 +1,2329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>The Dragon's Spell: Muntaha's Quest</title>
+    <style>
+      :root {
+        --purple: #2d1b4e;
+        --purple2: #5b3a8c;
+        --gold: #e8b341;
+        --gold2: #ffd66b;
+        --cream: #f4e8d0;
+        --green: #3a6b47;
+        --teal: #4fb3bf;
+        --ink: #1f1730;
+        --mist: rgba(255, 255, 255, 0.13);
+        --ok: #68e0a0;
+        --soft: #fff6df;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family:
+          Nunito,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+        font-size: 16px;
+        color: var(--cream);
+        background: radial-gradient(
+          circle at 20% 10%,
+          #6f55a0 0,
+          #2d1b4e 34%,
+          #130b25 100%
+        );
+        overflow-x: hidden;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .app {
+        min-height: 100vh;
+        position: relative;
+        isolation: isolate;
+      }
+      .stars,
+      .stars:before,
+      .stars:after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(#fff8 1px, transparent 1px),
+          radial-gradient(#ffd66b99 1px, transparent 1px);
+        background-size:
+          54px 54px,
+          91px 91px;
+        background-position:
+          0 0,
+          28px 17px;
+        animation: twinkle 9s linear infinite;
+        z-index: -2;
+      }
+      .stars:before {
+        animation-duration: 14s;
+        opacity: 0.45;
+        transform: scale(1.2);
+      }
+      .stars:after {
+        animation-duration: 20s;
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+      @keyframes twinkle {
+        50% {
+          opacity: 0.55;
+          filter: drop-shadow(0 0 4px #fff);
+        }
+      }
+      .aurora {
+        position: fixed;
+        inset: auto -20% -30% -20%;
+        height: 60vh;
+        background:
+          radial-gradient(ellipse at 40% 50%, #4fb3bf33, transparent 55%),
+          radial-gradient(ellipse at 60% 70%, #e8b34122, transparent 55%);
+        filter: blur(20px);
+        z-index: -1;
+        animation: float 12s ease-in-out infinite alternate;
+      }
+      @keyframes float {
+        to {
+          transform: translateY(-35px) scale(1.08);
+        }
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: Cinzel, Georgia, serif;
+        letter-spacing: 0.03em;
+      }
+      h1 {
+        font-size: clamp(2rem, 6vw, 4.8rem);
+        line-height: 1;
+        margin: 0;
+        text-shadow: 0 0 28px #ffd66b66;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 4vw, 3rem);
+        margin: 0.2rem 0 1rem;
+      }
+      .screen {
+        min-height: 100vh;
+        padding: 18px;
+        display: none;
+        animation: fade 0.45s ease;
+      }
+      .screen.active {
+        display: block;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .center {
+        display: grid;
+        place-items: center;
+        text-align: center;
+      }
+      .hero {
+        max-width: 980px;
+        padding: 30px;
+        border: 1px solid #ffd66b66;
+        border-radius: 30px;
+        background: linear-gradient(145deg, #ffffff14, #ffffff08);
+        box-shadow:
+          0 20px 80px #0008,
+          inset 0 0 60px #ffd66b12;
+        backdrop-filter: blur(10px);
+      }
+      .subtitle {
+        font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+        color: #fff4d6;
+        max-width: 780px;
+        margin: 18px auto;
+        line-height: 1.6;
+      }
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 13px 20px;
+        margin: 6px;
+        background: linear-gradient(180deg, var(--gold2), var(--gold));
+        color: #251435;
+        font-weight: 900;
+        box-shadow:
+          0 8px 0 #9a671c,
+          0 14px 28px #0005;
+        transition:
+          0.18s transform,
+          0.18s filter;
+      }
+      .btn:hover,
+      .btn:focus-visible {
+        transform: translateY(-2px);
+        filter: brightness(1.06);
+        outline: 3px solid #fff8;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 4px 0 #9a671c;
+      }
+      .btn.secondary {
+        background: linear-gradient(180deg, #fff8, #fff2);
+        color: var(--cream);
+        box-shadow: 0 5px 0 #ffffff20;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid #ffd66b88;
+        color: #ffe9a6;
+        box-shadow: none;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        margin: -18px -18px 18px;
+        background: #170d2ecc;
+        border-bottom: 1px solid #ffd66b33;
+        backdrop-filter: blur(10px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid #ffd66b55;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: #0003;
+        color: #fff6da;
+        font-weight: 800;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+        gap: 16px;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+      .card {
+        border: 1px solid #ffd66b55;
+        border-radius: 24px;
+        background: linear-gradient(150deg, #ffffff18, #ffffff08);
+        box-shadow:
+          0 12px 34px #0006,
+          inset 0 0 30px #fff1;
+        padding: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+      .realm {
+        min-height: 250px;
+        text-align: left;
+        transition:
+          0.25s transform,
+          0.25s box-shadow;
+      }
+      .realm:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 18px 50px #0009,
+          0 0 35px var(--glow, #ffd66b55);
+      }
+      .realm.dim {
+        filter: saturate(0.7);
+        opacity: 0.78;
+      }
+      .realm svg {
+        width: 100%;
+        height: 110px;
+      }
+      .levelbar {
+        height: 13px;
+        background: #0005;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid #fff3;
+      }
+      .levelbar > span {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--teal), var(--gold2));
+        box-shadow: 0 0 14px #ffd66b;
+        transition: width 0.8s;
+      }
+      .map-head {
+        max-width: 1180px;
+        margin: 0 auto 18px;
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .aleph {
+        position: fixed;
+        left: 12px;
+        bottom: 12px;
+        width: 86px;
+        height: 86px;
+        border-radius: 50%;
+        background: #140a27;
+        border: 2px solid #ffd66b88;
+        box-shadow: 0 0 25px #ffd66b55;
+        z-index: 20;
+        padding: 3px;
+      }
+      .aleph svg {
+        width: 100%;
+        height: 100%;
+      }
+      .blink {
+        animation: blink 5s infinite;
+      }
+      .beard {
+        animation: beard 3s ease-in-out infinite alternate;
+        transform-origin: 50% 70%;
+      }
+      @keyframes blink {
+        0%,
+        96%,
+        100% {
+          transform: scaleY(1);
+        }
+        98% {
+          transform: scaleY(0.12);
+        }
+      }
+      @keyframes beard {
+        to {
+          transform: rotate(2deg);
+        }
+      }
+      .panel {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .question-card {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px;
+        border-radius: 28px;
+        background: linear-gradient(160deg, #fff8e8, #f0d9aa);
+        color: var(--ink);
+        box-shadow: 0 20px 70px #0008;
+        border: 3px solid #ffd66b;
+      }
+      .question-card h2,
+      .question-card h3 {
+        color: #32174f;
+      }
+      .prompt {
+        font-size: clamp(1.25rem, 3vw, 1.8rem);
+        line-height: 1.4;
+        font-weight: 900;
+      }
+      .options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .choice {
+        padding: 14px;
+        border-radius: 16px;
+        border: 2px solid #6d4a95;
+        background: #fffaf0;
+        color: #241435;
+        font-weight: 900;
+        min-height: 54px;
+      }
+      .choice[aria-pressed="true"],
+      .choice.selected {
+        background: #dff8ff;
+        border-color: #168b9d;
+        box-shadow: 0 0 0 4px #4fb3bf33;
+      }
+      .input-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 15px 0;
+      }
+      .answer-input {
+        font-size: 1.35rem;
+        padding: 14px;
+        border-radius: 14px;
+        border: 2px solid #6d4a95;
+        min-width: min(100%, 310px);
+        background: white;
+        color: #241435;
+      }
+      .numpad {
+        display: grid;
+        grid-template-columns: repeat(3, 70px);
+        gap: 8px;
+        justify-content: center;
+        margin: 12px auto;
+      }
+      .numpad button {
+        padding: 14px;
+        border: 0;
+        border-radius: 13px;
+        background: #5b3a8c;
+        color: white;
+        font-weight: 900;
+      }
+      .feedback {
+        min-height: 48px;
+        margin: 12px 0;
+        font-weight: 900;
+        color: #3b245d;
+      }
+      .gentle {
+        color: #7a4a1d;
+      }
+      .good {
+        color: #14653e;
+      }
+      .hint {
+        background: #fff1c9;
+        border-left: 5px solid #e8b341;
+        border-radius: 12px;
+        padding: 12px;
+        margin: 8px 0;
+      }
+      .saved {
+        position: fixed;
+        right: 18px;
+        bottom: 20px;
+        background: #102617;
+        color: #d7ffe8;
+        border: 1px solid #68e0a0;
+        border-radius: 999px;
+        padding: 10px 14px;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: 0.25s;
+        z-index: 50;
+      }
+      .saved.show {
+        opacity: 1;
+        transform: none;
+      }
+      .pause-cover {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: radial-gradient(circle, #2d1b4ef2, #090412f7);
+        display: none;
+        place-items: center;
+        text-align: center;
+      }
+      .pause-cover.show {
+        display: grid;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: #090412cc;
+        z-index: 60;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+      }
+      .modal.show {
+        display: flex;
+      }
+      .modal-box {
+        max-width: 920px;
+        max-height: 90vh;
+        overflow: auto;
+        background: linear-gradient(155deg, #fff9ea, #ead1a0);
+        color: #241435;
+        border: 3px solid #ffd66b;
+        border-radius: 26px;
+        padding: 22px;
+        box-shadow: 0 25px 90px #000;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .drag-list {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .tile {
+        touch-action: none;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #5b3a8c;
+        color: #fff;
+        font-weight: 900;
+        box-shadow: 0 5px 0 #2d1b4e;
+      }
+      .visual {
+        margin: 12px auto;
+        max-width: 640px;
+        background: #fffdf6;
+        border-radius: 16px;
+        padding: 10px;
+        border: 1px solid #d7bb6c;
+        color: #241435;
+      }
+      .sparkle {
+        position: fixed;
+        pointer-events: none;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #ffd66b;
+        box-shadow: 0 0 12px #fff;
+        z-index: 80;
+        animation: pop 0.8s ease-out forwards;
+      }
+      @keyframes pop {
+        to {
+          transform: translate(var(--dx), var(--dy)) scale(0);
+          opacity: 0;
+        }
+      }
+      .portal {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: conic-gradient(
+          from 0deg,
+          transparent,
+          #4fb3bf88,
+          transparent,
+          #ffd66b88,
+          transparent
+        );
+        opacity: 0;
+        z-index: 55;
+      }
+      .portal.spin {
+        animation: swirl 0.75s ease;
+      }
+      @keyframes swirl {
+        0% {
+          opacity: 0;
+          transform: scale(0.2) rotate(0);
+        }
+        50% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 0;
+          transform: scale(2.3) rotate(540deg);
+        }
+      }
+      .cutscene {
+        max-width: 980px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .scene-art {
+        min-height: 230px;
+      }
+      .spellbook {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .badge {
+        display: inline-block;
+        margin: 4px;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: #2d1b4e;
+        color: #fff;
+      }
+      .danger {
+        background: #7b2233;
+        color: white;
+      }
+      .small {
+        font-size: 0.92rem;
+        opacity: 0.92;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+      }
+      .linechart,
+      .radar {
+        width: 100%;
+        max-width: 430px;
+        height: auto;
+      }
+      .bargraph {
+        display: flex;
+        gap: 8px;
+        align-items: end;
+        height: 180px;
+        padding: 16px;
+      }
+      .bar {
+        flex: 1;
+        background: linear-gradient(#4fb3bf, #2d7a83);
+        border-radius: 8px 8px 0 0;
+        position: relative;
+      }
+      .bar span {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: 900;
+      }
+      .protractor {
+        width: 100%;
+        max-width: 420px;
+        margin: auto;
+        display: block;
+      }
+      .angle-arm {
+        transform-origin: 210px 160px;
+        transition: transform 0.3s;
+      }
+      @media (min-width: 768px) {
+        .screen {
+          padding: 24px;
+        }
+        .topbar {
+          margin: -24px -24px 22px;
+        }
+        .cutscene {
+          grid-template-columns: 1fr 1.2fr;
+          align-items: center;
+        }
+        .aleph {
+          width: 104px;
+          height: 104px;
+        }
+        .question-card {
+          padding: 32px;
+        }
+      }
+      @media (max-width: 480px) {
+        .btn {
+          width: 100%;
+          margin: 6px 0;
+        }
+        .topbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+        .numpad {
+          grid-template-columns: repeat(3, 1fr);
+          width: 100%;
+        }
+        .aleph {
+          width: 72px;
+          height: 72px;
+        }
+        .question-card {
+          padding: 18px;
+        }
+        .options {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <div class="stars"></div>
+      <div class="aurora"></div>
+      <div class="portal" id="portal"></div>
+      <section
+        id="home"
+        class="screen active center"
+        aria-live="polite"
+      ></section>
+      <section id="diagnostic" class="screen"></section>
+      <section id="map" class="screen"></section>
+      <section id="cutscene" class="screen"></section>
+      <section id="quest" class="screen"></section>
+      <section id="settings" class="screen"></section>
+      <section id="spellbook" class="screen"></section>
+      <button
+        class="aleph"
+        id="alephBtn"
+        aria-label="Master Aleph portrait, secret parent dashboard"
+      >
+        <svg viewBox="0 0 100 100" role="img" aria-label="Master Aleph">
+          <defs>
+            <linearGradient id="r" x1="0" x2="1">
+              <stop stop-color="#5B3A8C" />
+              <stop offset="1" stop-color="#2D1B4E" />
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="47" fill="#f4e8d0" />
+          <path
+            d="M18 42Q50 0 82 42L68 37L61 19L52 35L40 12L36 36Z"
+            fill="#2d1b4e"
+          />
+          <path d="M23 50q27-26 54 0v30H23z" fill="url(#r)" />
+          <g class="beard">
+            <path
+              d="M31 50q19 16 38 0q-4 38-19 43Q35 88 31 50"
+              fill="#f7f1df"
+            />
+            <path
+              d="M43 68q8 8 15 0"
+              stroke="#d6c8ad"
+              fill="none"
+              stroke-width="2"
+            />
+          </g>
+          <circle cx="38" cy="43" r="3" fill="#241435" class="blink" />
+          <circle cx="62" cy="43" r="3" fill="#241435" class="blink" />
+          <path
+            d="M42 53q8 5 16 0"
+            stroke="#7a4a1d"
+            stroke-width="2"
+            fill="none"
+          />
+          <g fill="#ffd66b">
+            <circle cx="31" cy="28" r="2" />
+            <circle cx="70" cy="30" r="2" />
+            <path d="M51 9l2 5 5 1-5 2-2 5-2-5-5-2 5-1z" />
+          </g>
+        </svg>
+      </button>
+      <div class="saved" id="saved">✨ Saved</div>
+      <div class="pause-cover" id="pauseCover">
+        <div>
+          <h1>Quest Paused</h1>
+          <p class="subtitle">
+            Master Aleph is holding the spell safely. Tap to resume.
+          </p>
+          <button class="btn">Resume Quest</button>
+        </div>
+      </div>
+      <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+    </div>
+    <script>
+      "use strict";
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => Array.from(document.querySelectorAll(s));
+      const KEY = "muntaha_game_v1",
+        now = () => new Date().toISOString(),
+        clamp = (n, a, b) => Math.max(a, Math.min(b, n)),
+        rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a,
+        pick = (a) => a[rnd(0, a.length - 1)],
+        shuffle = (a) =>
+          a
+            .map((v) => [Math.random(), v])
+            .sort((x, y) => x[0] - y[0])
+            .map((x) => x[1]);
+      const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a)),
+        fmt = (n) => Number(n).toLocaleString("en-US"),
+        clean = (s) =>
+          String(s)
+            .toLowerCase()
+            .replace(/[,\s-]+/g, " ")
+            .trim(),
+        title = (s) =>
+          s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      const TOPICS = [
+        {
+          id: "place_value",
+          chapter: 1,
+          realm: "The Crystal Caves",
+          short: "Place Value",
+          icon: "💎",
+          color: "#4FB3BF",
+          reward: "Glowstone of Places",
+          subs: [
+            "numerical_form",
+            "word_form",
+            "place_value_digit",
+            "digit_value",
+            "rounding",
+            "comparing",
+            "ordering",
+            "patterns",
+            "riddles",
+          ],
+        },
+        {
+          id: "factors_multiples",
+          chapter: 2,
+          realm: "The Whispering Woods",
+          short: "Factors & Multiples",
+          icon: "🌲",
+          color: "#3A6B47",
+          reward: "Factor Fox Friend",
+          subs: [
+            "list_factors",
+            "identify_multiples",
+            "common_factors",
+            "number_riddles",
+          ],
+        },
+        {
+          id: "operations",
+          chapter: 3,
+          realm: "The Forge of Four",
+          short: "Four Operations",
+          icon: "⚒️",
+          color: "#E86F41",
+          reward: "Fourfold Forge Flame",
+          subs: [
+            "addition",
+            "subtraction",
+            "multiplication_3x2",
+            "multiply_10_100_1000",
+            "division_remainder",
+            "long_division_decimal",
+            "estimation",
+          ],
+        },
+        {
+          id: "word_problems",
+          chapter: 4,
+          realm: "The Village of Voices",
+          short: "Word Problems",
+          icon: "🏘️",
+          color: "#FFD66B",
+          reward: "Village Bell of Equations",
+          subs: [
+            "multiplication_words",
+            "factory_two_step",
+            "stadium_two_step",
+            "sharing",
+            "money_two_step",
+            "comparison_per_unit",
+            "algebra_style",
+          ],
+        },
+        {
+          id: "fractions",
+          chapter: 5,
+          realm: "The Mirror Lake",
+          short: "Fractions",
+          icon: "🌊",
+          color: "#79C7E3",
+          reward: "Mirror Fraction Shard",
+          subs: [
+            "improper_to_mixed",
+            "mixed_to_improper",
+            "equivalent",
+            "simplify",
+            "like_denominators",
+            "fraction_words",
+            "fraction_of_quantity",
+            "multi_fraction",
+          ],
+        },
+        {
+          id: "decimals",
+          chapter: 6,
+          realm: "The Glimmering Glade",
+          short: "Decimals",
+          icon: "✨",
+          color: "#4FB3BF",
+          reward: "Decimal Dewdrop Lantern",
+          subs: [
+            "fraction_to_decimal",
+            "decimal_multiply",
+            "decimal_add_words",
+            "decimal_division_round",
+            "decimal_multistep",
+            "proportional",
+          ],
+        },
+        {
+          id: "angles",
+          chapter: 7,
+          realm: "The Compass Tower",
+          short: "Angles",
+          icon: "🧭",
+          color: "#B892FF",
+          reward: "Compass Shard",
+          subs: [
+            "identify_angles",
+            "measure_angles",
+            "draw_angles",
+            "straight_line",
+            "around_point",
+          ],
+        },
+        {
+          id: "data",
+          chapter: 8,
+          realm: "The Royal Archive",
+          short: "Data",
+          icon: "📜",
+          color: "#D8A35D",
+          reward: "Royal Scroll of Patterns",
+          subs: [
+            "bar_pictograph",
+            "line_graph",
+            "mean_mode_range",
+            "comparison_data",
+          ],
+        },
+      ];
+      const EXP = { recall: 15, calculation: 45, word: 90, multistep: 120 };
+      const StateManager = {
+        state: null,
+        blank() {
+          const skillLevels = {},
+            subSkills = {},
+            timeByTopic = {};
+          TOPICS.forEach((t) => {
+            skillLevels[t.id] = 2.5;
+            timeByTopic[t.id] = { week: 0, total: 0 };
+            t.subs.forEach(
+              (s) =>
+                (subSkills[t.id + "." + s] = {
+                  attempts: [],
+                  struggleScore: 0.55,
+                  lastSeen: null,
+                  mastered: false,
+                  wrongStreak: 0,
+                  examples: [],
+                }),
+            );
+          });
+          return {
+            player: {
+              name: "Muntaha",
+              createdAt: now(),
+              lastPlayed: now(),
+              totalPlayTimeSeconds: 0,
+              currentChapter: 1,
+              streak: {
+                count: 1,
+                lastDate: new Date().toDateString(),
+                grace: true,
+              },
+            },
+            skillLevels,
+            subSkills,
+            inventory: [],
+            storyProgress: {
+              chapter: 1,
+              scene: 0,
+              completedChapters: [],
+              unlocked: TOPICS.map((t) => t.id),
+            },
+            diagnosticCompleted: false,
+            settings: {
+              soundOn: false,
+              hintsAuto: true,
+              parentPasscode: "4321",
+            },
+            logs: [],
+            chapterCounts: {},
+            timeByTopic,
+          };
+        },
+        load() {
+          try {
+            this.state = JSON.parse(localStorage.getItem(KEY)) || this.blank();
+          } catch (e) {
+            this.state = this.blank();
+          }
+          this.ensure();
+          this.touchStreak();
+          return this.state;
+        },
+        ensure() {
+          const fresh = this.blank();
+          this.state = { ...fresh, ...this.state };
+          this.state.player = { ...fresh.player, ...this.state.player };
+          this.state.settings = { ...fresh.settings, ...this.state.settings };
+          TOPICS.forEach((t) => {
+            this.state.skillLevels[t.id] ??= 2.5;
+            this.state.timeByTopic[t.id] ??= { week: 0, total: 0 };
+            this.state.chapterCounts[t.id] ??= 0;
+            t.subs.forEach((s) => {
+              const k = t.id + "." + s;
+              this.state.subSkills[k] = {
+                ...fresh.subSkills[k],
+                ...(this.state.subSkills[k] || {}),
+              };
+            });
+          });
+        },
+        touchStreak() {
+          const d = new Date().toDateString(),
+            last = this.state.player.streak.lastDate;
+          if (last !== d) {
+            const diff = (new Date(d) - new Date(last)) / 86400000;
+            this.state.player.streak.count =
+              diff <= 2
+                ? this.state.player.streak.count + 1
+                : this.state.player.streak.count;
+            this.state.player.streak.grace = diff > 1;
+            this.state.player.streak.lastDate = d;
+          }
+          this.state.player.lastPlayed = now();
+          this.save(false);
+        },
+        save(show = true) {
+          localStorage.setItem(KEY, JSON.stringify(this.state));
+          if (show) UI.saved();
+        },
+        reset() {
+          localStorage.removeItem(KEY);
+          this.state = this.blank();
+          this.save();
+          location.reload();
+        },
+        export() {
+          const blob = new Blob([JSON.stringify(this.state, null, 2)], {
+              type: "application/json",
+            }),
+            a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "muntaha-numeria-progress.json";
+          a.click();
+          URL.revokeObjectURL(a.href);
+        },
+        import(file) {
+          const r = new FileReader();
+          r.onload = () => {
+            try {
+              this.state = JSON.parse(r.result);
+              this.ensure();
+              this.save();
+              UI.route("map");
+            } catch (e) {
+              alert("This spellbook file could not be read.");
+            }
+          };
+          r.readAsText(file);
+        },
+      };
+      function wordsUnder1000(n) {
+        const ones = [
+            "",
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+            "eleven",
+            "twelve",
+            "thirteen",
+            "fourteen",
+            "fifteen",
+            "sixteen",
+            "seventeen",
+            "eighteen",
+            "nineteen",
+          ],
+          tens = [
+            "",
+            "",
+            "twenty",
+            "thirty",
+            "forty",
+            "fifty",
+            "sixty",
+            "seventy",
+            "eighty",
+            "ninety",
+          ];
+        let out = [];
+        if (n >= 100) {
+          out.push(ones[Math.floor(n / 100)] + " hundred");
+          n %= 100;
+        }
+        if (n >= 20) {
+          out.push(tens[Math.floor(n / 10)]);
+          if (n % 10) out.push(ones[n % 10]);
+        } else if (n > 0) out.push(ones[n]);
+        return out.join(" ");
+      }
+      function numberWords(n) {
+        if (n === 0) return "zero";
+        let out = [];
+        if (n >= 100000) {
+          out.push(
+            wordsUnder1000(Math.floor(n / 100000)) + " hundred thousand",
+          );
+          n %= 100000;
+        }
+        if (n >= 1000) {
+          out.push(wordsUnder1000(Math.floor(n / 1000)) + " thousand");
+          n %= 1000;
+        }
+        if (n) out.push(wordsUnder1000(n));
+        return out.join(" ");
+      }
+      function mcq(ans, alts) {
+        const opts = shuffle([
+          ...new Set([String(ans), ...alts.map(String)]),
+        ]).slice(0, 4);
+        while (opts.length < 4)
+          opts.push(String(Number(ans || 0) + rnd(-20, 20)));
+        return opts;
+      }
+      const QuestionBank = {
+        used: new Set(),
+        make(topicId, sub, diff = 3) {
+          for (let tries = 0; tries < 20; tries++) {
+            const q = this.gen(topicId, sub, clamp(Math.round(diff), 1, 5));
+            q.id = topicId + "." + sub + "." + q.seed + "." + q.answer;
+            q.topicId = topicId;
+            q.subSkillId = topicId + "." + sub;
+            q.difficulty = diff;
+            if (!this.used.has(q.id)) {
+              this.used.add(q.id);
+              return q;
+            }
+          }
+          return this.gen(topicId, sub, diff);
+        },
+        any(topicId, diff = 3) {
+          const t = TOPICS.find((x) => x.id === topicId);
+          return this.make(topicId, pick(t.subs), diff);
+        },
+        diagnostic(topicId, diff) {
+          const t = TOPICS.find((x) => x.id === topicId);
+          return this.make(topicId, pick(t.subs), diff);
+        },
+        gen(t, s, d) {
+          const seed = rnd(1000, 999999),
+            variant = rnd(1, 15),
+            hint = [
+              "Read the question slowly and underline the numbers.",
+              "Estimate first; your exact answer should feel close.",
+              "Master Aleph whispers: use a smaller example, then copy the pattern.",
+            ];
+          let q = {
+            seed,
+            variant,
+            type: "numeric",
+            prompt: "",
+            answer: 0,
+            options: [],
+            hints: hint,
+            expected: "calculation",
+            visual: null,
+            validate: (a) => String(a).trim() === String(q.answer),
+          };
+          if (t === "place_value") {
+            const n = rnd(10000, 999999),
+              places = [1, 10, 100, 1000, 10000, 100000],
+              p = pick(places.filter((x) => x <= n)),
+              digit = Math.floor(n / p) % 10;
+            if (s === "numerical_form") {
+              const m = rnd(12000, 499999);
+              q.type = "numeric";
+              q.prompt = `Write this spell-number in digits: ${numberWords(m)}.`;
+              q.answer = m;
+              q.hints = [
+                "Listen for thousand and hundred parts.",
+                "Write each place in order, using 0 if a place is empty.",
+              ];
+            }
+            if (s === "word_form") {
+              q.type = "text";
+              q.prompt = `Write ${fmt(n)} in words.`;
+              q.answer = numberWords(n);
+              q.expected = "recall";
+              q.validate = (a) => clean(a) === clean(q.answer);
+            }
+            if (s === "place_value_digit") {
+              q.type = "mcq";
+              q.prompt = `What is the place of the digit ${digit} in ${fmt(n)}?`;
+              const names = {
+                1: "ones",
+                10: "tens",
+                100: "hundreds",
+                1000: "thousands",
+                10000: "ten thousands",
+                100000: "hundred thousands",
+              };
+              q.answer = names[p];
+              q.options = mcq(q.answer, Object.values(names));
+              q.expected = "recall";
+            }
+            if (s === "digit_value") {
+              q.type = "numeric";
+              q.prompt = `What is the value of the digit ${digit} in ${fmt(n)}?`;
+              q.answer = digit * p;
+            }
+            if (s === "rounding") {
+              const unit = pick([10, 100, 1000, 10000]);
+              q.type = "visual";
+              q.prompt = `Round ${fmt(n)} to the nearest ${fmt(unit)}.`;
+              q.answer = Math.round(n / unit) * unit;
+              q.visual = { kind: "numberline", n, unit };
+              q.hints = [
+                "Find the two nearest marks on the number line.",
+                "If the next digit is 5 or more, round up.",
+              ];
+            }
+            if (s === "comparing") {
+              const a = rnd(10000, 999999),
+                b = rnd(10000, 999999);
+              q.type = "mcq";
+              q.prompt = `Which symbol makes the gate true? ${fmt(a)} ___ ${fmt(b)}`;
+              q.answer = a > b ? ">" : a < b ? "<" : "=";
+              q.options = [">", "<", "="];
+            }
+            if (s === "ordering") {
+              const arr = shuffle([
+                n,
+                rnd(10000, 999999),
+                rnd(10000, 999999),
+                rnd(10000, 999999),
+              ]);
+              const asc = Math.random() > 0.5;
+              q.type = "order";
+              q.prompt = `Drag the numbers into ${asc ? "ascending" : "descending"} order.`;
+              q.items = arr.map(fmt);
+              q.answer = [...arr]
+                .sort((a, b) => (asc ? a - b : b - a))
+                .map(fmt);
+              q.validate = (a) =>
+                JSON.stringify(a) === JSON.stringify(q.answer);
+            }
+            if (s === "patterns") {
+              const start = rnd(100, 999) * 100,
+                step = pick([10, 50, 100, 1000]);
+              q.type = "numeric";
+              q.prompt = `Complete the pattern: ${fmt(start)}, ${fmt(start + step)}, ${fmt(start + 2 * step)}, ___ .`;
+              q.answer = start + 3 * step;
+            }
+            if (s === "riddles") {
+              const a = rnd(1, 9),
+                b = rnd(0, 9),
+                ans = a * 10000 + 7 * 100 + b * 10 + 7;
+              q.type = "numeric";
+              q.prompt = `I am a 5-digit number. My ten-thousands digit is ${a}, hundreds and ones are 7, and my tens digit is ${b}. What number am I?`;
+              q.answer = ans;
+            }
+          }
+          if (t === "factors_multiples") {
+            const n = rnd(12, 60),
+              fac = Array.from({ length: n }, (_, i) => i + 1).filter(
+                (x) => n % x === 0,
+              );
+            if (s === "list_factors") {
+              q.type = "multi";
+              q.prompt = `Select all factor-keys of ${n}.`;
+              q.answer = fac.map(String);
+              q.options = shuffle(
+                [...fac, ...Array.from({ length: 8 }, () => rnd(2, 70))].map(
+                  String,
+                ),
+              )
+                .filter((v, i, a) => a.indexOf(v) === i)
+                .slice(0, 12);
+              q.validate = (a) =>
+                JSON.stringify(a.map(String).sort((x, y) => x - y)) ===
+                JSON.stringify(q.answer.sort((x, y) => x - y));
+              q.expected = "recall";
+            }
+            if (s === "identify_multiples") {
+              const base = rnd(3, 12);
+              q.type = "multi";
+              q.prompt = `Select all multiples of ${base}.`;
+              q.answer = Array.from({ length: 6 }, (_, i) =>
+                String(base * (i + 1)),
+              );
+              q.options = shuffle([
+                ...q.answer,
+                ...Array.from({ length: 8 }, () => String(rnd(5, 80))),
+              ]).slice(0, 12);
+              q.validate = (a) =>
+                a.every((x) => Number(x) % base === 0) &&
+                a.length ===
+                  q.answer.filter((x) => q.options.includes(x)).length;
+            }
+            if (s === "common_factors") {
+              const a = rnd(12, 48),
+                b = rnd(12, 60),
+                cf = Array.from(
+                  { length: Math.min(a, b) },
+                  (_, i) => i + 1,
+                ).filter((x) => a % x === 0 && b % x === 0);
+              q.type = "multi";
+              q.prompt = `Select common factors of ${a} and ${b}.`;
+              q.answer = cf.map(String);
+              q.options = shuffle(
+                [...cf, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15].map(String),
+              ).filter((v, i, a) => a.indexOf(v) === i);
+              q.validate = (a) =>
+                JSON.stringify(a.map(String).sort((x, y) => x - y)) ===
+                JSON.stringify(q.answer.sort((x, y) => x - y));
+            }
+            if (s === "number_riddles") {
+              q.type = "numeric";
+              q.prompt =
+                "I am an even number, a multiple of 3 and 5, between 20 and 40. Who am I?";
+              q.answer = 30;
+              q.expected = "word";
+            }
+          }
+          if (t === "operations") {
+            const a = rnd(1000, 9000),
+              b = rnd(1000, 9000);
+            if (s === "addition") {
+              q.prompt = `The forge sparks: ${fmt(a)} + ${fmt(b)} = ?`;
+              q.answer = a + b;
+            }
+            if (s === "subtraction") {
+              const x = rnd(5000, 20000),
+                y = rnd(1000, x - 1);
+              q.prompt = `Unfreeze the anvil: ${fmt(x)} − ${fmt(y)} = ?`;
+              q.answer = x - y;
+            }
+            if (s === "multiplication_3x2") {
+              const x = rnd(100, 999),
+                y = rnd(10, 99);
+              q.prompt = `Stack the forge runes: ${x} × ${y} = ?`;
+              q.answer = x * y;
+              q.visual = { kind: "multiply", x, y };
+              q.hints = [
+                "Multiply by the ones digit first.",
+                "Then multiply by the tens digit and add a zero.",
+                "Add the two partial products.",
+              ];
+            }
+            if (s === "multiply_10_100_1000") {
+              const x = rnd(12, 999),
+                m = pick([10, 100, 1000]);
+              q.prompt = `What is ${x} × ${fmt(m)}?`;
+              q.answer = x * m;
+              q.expected = "recall";
+            }
+            if (s === "division_remainder") {
+              const div = rnd(3, 12),
+                quot = rnd(20, 200),
+                rem = rnd(1, div - 1),
+                num = div * quot + rem;
+              q.type = "text";
+              q.prompt = `Divide ${num} ÷ ${div}. Write like 42 R 3.`;
+              q.answer = `${quot} R ${rem}`;
+              q.validate = (a) =>
+                clean(a).replace(" r ", " r ") === clean(q.answer);
+            }
+            if (s === "long_division_decimal") {
+              const div = rnd(3, 9),
+                num = rnd(100, 999);
+              q.type = "numeric";
+              q.prompt = `${num} ÷ ${div}, rounded to 2 decimal places = ?`;
+              q.answer = (num / div).toFixed(2);
+              q.validate = (a) =>
+                Math.abs(parseFloat(a) - parseFloat(q.answer)) < 0.005;
+            }
+            if (s === "estimation") {
+              const x = rnd(1000, 9000),
+                y = rnd(1000, 9000);
+              q.prompt = `Estimate by rounding to nearest thousand: ${fmt(x)} + ${fmt(y)} ≈ ?`;
+              q.answer =
+                Math.round(x / 1000) * 1000 + Math.round(y / 1000) * 1000;
+            }
+          }
+          if (t === "word_problems") {
+            q.expected = "multistep";
+            if (s === "multiplication_words") {
+              const p = rnd(4, 9),
+                packs = rnd(30, 120);
+              q.prompt = `A packet has ${p} pencils. Muntaha's school buys ${packs} packets. How many pencils?`;
+              q.answer = p * packs;
+            }
+            if (s === "factory_two_step") {
+              const per = rnd(80, 180),
+                h = rnd(8, 24),
+                bad = rnd(100, 500);
+              q.prompt = `A factory makes ${per} cars every hour for ${h} hours. If ${bad} are defective, how many good cars are made?`;
+              q.answer = per * h - bad;
+            }
+            if (s === "stadium_two_step") {
+              const rows = rnd(50, 90),
+                seats = rnd(80, 140),
+                cap = rows * seats,
+                occ = rnd(1000, cap - 200);
+              q.prompt = `A stadium has ${rows} rows of ${seats} seats. If ${fmt(occ)} seats are occupied, how many are empty?`;
+              q.answer = cap - occ;
+            }
+            if (s === "sharing") {
+              const total = rnd(200, 900),
+                kids = rnd(4, 12);
+              q.prompt = `${total} sweets are shared equally among ${kids} children. How many sweets does each child get? (ignore leftovers)`;
+              q.answer = Math.floor(total / kids);
+            }
+            if (s === "money_two_step") {
+              const cost = rnd(45, 250),
+                qty = rnd(3, 9),
+                paid = rnd(cost * qty + 50, cost * qty + 500);
+              q.prompt = `A book costs Rs. ${cost}. If ${qty} books are bought and Rs. ${paid} is paid, what change is returned?`;
+              q.answer = paid - cost * qty;
+            }
+            if (s === "comparison_per_unit") {
+              const aJ = rnd(4, 8),
+                bJ = rnd(6, 10),
+                aC = aJ * rnd(500, 900),
+                bC = bJ * rnd(500, 900);
+              q.type = "mcq";
+              q.prompt = `Shop A packed ${fmt(aC)} candies into ${aJ} jars. Shop B packed ${fmt(bC)} candies into ${bJ} jars. Which packed more per jar?`;
+              q.answer = aC / aJ > bC / bJ ? "Shop A" : "Shop B";
+              q.options = ["Shop A", "Shop B", "Equal", "Cannot tell"];
+            }
+            if (s === "algebra_style") {
+              const jack = rnd(200, 400),
+                gave = rnd(25, 90),
+                gary = 5 * (jack - gave),
+                total = jack + gary;
+              q.prompt = `Jack and Gary had ${fmt(total)} cards. Jack gave away ${gave}; then Gary had 5× Jack's remaining cards. How many did Gary have?`;
+              q.answer = gary;
+            }
+          }
+          if (t === "fractions") {
+            const den = rnd(3, 12),
+              num = rnd(den + 1, den * 5);
+            if (s === "improper_to_mixed") {
+              q.type = "text";
+              q.prompt = `Convert ${num}/${den} to a mixed number.`;
+              const w = Math.floor(num / den),
+                r = num % den;
+              q.answer = r ? `${w} ${r}/${den}` : String(w);
+              q.visual = { kind: "fraction", num, den };
+              q.validate = (a) => clean(a) === clean(q.answer);
+            }
+            if (s === "mixed_to_improper") {
+              const w = rnd(1, 5),
+                r = rnd(1, den - 1);
+              q.type = "text";
+              q.prompt = `Convert ${w} ${r}/${den} to an improper fraction.`;
+              q.answer = `${w * den + r}/${den}`;
+              q.validate = (a) => clean(a) === clean(q.answer);
+            }
+            if (s === "equivalent") {
+              const n = rnd(1, 5),
+                d2 = rnd(n + 1, 9),
+                m = rnd(2, 5);
+              q.type = "text";
+              q.prompt = `Write one equivalent fraction for ${n}/${d2}.`;
+              q.answer = `${n * m}/${d2 * m}`;
+              q.visual = { kind: "fraction", num: n, den: d2 };
+              q.validate = (a) => {
+                const [x, y] = String(a).split("/").map(Number);
+                return x / y === n / d2 && x !== n;
+              };
+            }
+            if (s === "simplify") {
+              const n = rnd(2, 9),
+                d2 = rnd(n + 1, 12),
+                m = rnd(2, 6),
+                g = gcd(n, d2);
+              q.type = "text";
+              q.prompt = `Simplify ${n * m}/${d2 * m} to lowest terms.`;
+              q.answer = `${n / g}/${d2 / g}`;
+              q.validate = (a) => clean(a) === clean(q.answer);
+            }
+            if (s === "like_denominators") {
+              const a = rnd(1, den - 1),
+                b = rnd(1, den - a);
+              q.type = "text";
+              q.prompt = `Add: ${a}/${den} + ${b}/${den}`;
+              const g = gcd(a + b, den);
+              q.answer = `${(a + b) / g}/${den / g}`;
+              q.validate = (a) => clean(a) === clean(q.answer);
+            }
+            if (s === "fraction_words") {
+              const a = rnd(3, den),
+                b = rnd(1, a - 1);
+              q.type = "text";
+              q.prompt = `Coco had ${a}/${den} m of cloth and used ${b}/${den} m. How much is left?`;
+              const g = gcd(a - b, den);
+              q.answer = `${(a - b) / g}/${den / g}`;
+              q.validate = (a) => clean(a) === clean(q.answer);
+              q.expected = "word";
+            }
+            if (s === "fraction_of_quantity") {
+              const d2 = pick([4, 5, 8, 10]),
+                total = d2 * rnd(40, 130);
+              q.prompt = `Diana saved Rs. ${total}. How much is 1/${d2} of it?`;
+              q.answer = total / d2;
+              q.expected = "word";
+            }
+            if (s === "multi_fraction") {
+              const total = 30,
+                blue = 2 / 5,
+                purp = 1 / 3;
+              q.prompt = `David has 30 fish. 2/5 are blue and 1/3 are purple. How many are blue or purple altogether?`;
+              q.answer = total * blue + total * purp;
+              q.expected = "multistep";
+            }
+          }
+          if (t === "decimals") {
+            if (s === "fraction_to_decimal") {
+              const den = pick([10, 100, 1000]),
+                n = rnd(1, den - 1);
+              q.type = "numeric";
+              q.prompt = `Convert ${n}/${den} to a decimal.`;
+              q.answer = n / den;
+              q.validate = (a) => Math.abs(parseFloat(a) - q.answer) < 0.0001;
+              q.expected = "recall";
+            }
+            if (s === "decimal_multiply") {
+              const x = (rnd(500, 1500) / 100).toFixed(2),
+                h = rnd(3, 9);
+              q.type = "numeric";
+              q.prompt = `A machine makes ${x} m of cloth per hour. How much in ${h} hours?`;
+              q.answer = (x * h).toFixed(2);
+              q.validate = (a) => Math.abs(parseFloat(a) - q.answer) < 0.01;
+            }
+            if (s === "decimal_add_words") {
+              const a = (rnd(100, 900) / 10).toFixed(1),
+                b = (rnd(100, 900) / 10).toFixed(1);
+              q.type = "numeric";
+              q.prompt = `Two glade paths are ${a} m and ${b} m. How long altogether?`;
+              q.answer = (+a + +b).toFixed(1);
+              q.validate = (a) => Math.abs(parseFloat(a) - q.answer) < 0.01;
+            }
+            if (s === "decimal_division_round") {
+              const a = (rnd(1000, 9000) / 100).toFixed(2),
+                b = rnd(3, 9);
+              q.type = "numeric";
+              q.prompt = `${a} ÷ ${b}, rounded to nearest hundredth = ?`;
+              q.answer = (a / b).toFixed(2);
+              q.validate = (a) => Math.abs(parseFloat(a) - q.answer) < 0.005;
+            }
+            if (s === "decimal_multistep") {
+              const chair = 25.5,
+                chairs = 3,
+                total = 562.3;
+              q.type = "numeric";
+              q.prompt = `A chair costs $25.50. A table plus 3 chairs costs $562.30. What is the table cost?`;
+              q.answer = (total - chair * chairs).toFixed(2);
+              q.validate = (a) => Math.abs(parseFloat(a) - q.answer) < 0.01;
+              q.expected = "multistep";
+            }
+            if (s === "proportional") {
+              q.type = "numeric";
+              q.prompt = `5 boxes are 62.5 cm tall. How tall are 3 boxes?`;
+              q.answer = 37.5;
+              q.validate = (a) => Math.abs(parseFloat(a) - 37.5) < 0.01;
+            }
+          }
+          if (t === "angles") {
+            const ang = pick([30, 45, 60, 90, 110, 135, 180]);
+            if (s === "identify_angles") {
+              q.type = "mcq";
+              q.prompt = `What kind of angle is ${ang}°?`;
+              q.answer =
+                ang < 90
+                  ? "acute"
+                  : ang === 90
+                    ? "right"
+                    : ang < 180
+                      ? "obtuse"
+                      : "straight";
+              q.options = ["acute", "right", "obtuse", "straight"];
+              q.visual = { kind: "angle", angle: ang };
+              q.expected = "recall";
+            }
+            if (s === "measure_angles") {
+              q.type = "visual";
+              q.prompt = `Use the protractor magic: what is this angle?`;
+              q.answer = ang;
+              q.visual = { kind: "angle", angle: ang };
+              q.expected = "recall";
+            }
+            if (s === "draw_angles") {
+              q.type = "numeric";
+              q.prompt = `Set the compass arm to draw ${ang}°. Type the degrees shown.`;
+              q.answer = ang;
+              q.visual = { kind: "angle", angle: ang };
+            }
+            if (s === "straight_line") {
+              const a = rnd(30, 150);
+              q.prompt = `Two angles on a straight line: ${a}° and x. What is x?`;
+              q.answer = 180 - a;
+              q.visual = { kind: "angle", angle: a };
+            }
+            if (s === "around_point") {
+              const a = rnd(40, 100),
+                b = rnd(40, 100),
+                c = rnd(40, 100);
+              q.prompt = `Angles around a point are ${a}°, ${b}°, ${c}°, and x. What is x?`;
+              q.answer = 360 - a - b - c;
+            }
+          }
+          if (t === "data") {
+            const vals = [
+                rnd(5, 30),
+                rnd(5, 30),
+                rnd(5, 30),
+                rnd(5, 30),
+                rnd(5, 30),
+              ],
+              days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            q.visual = { kind: "bar", labels: days, vals };
+            q.expected = "word";
+            if (s === "bar_pictograph") {
+              const i = vals.indexOf(Math.max(...vals));
+              q.type = "mcq";
+              q.prompt = "From the bar graph, which day had the most crystals?";
+              q.answer = days[i];
+              q.options = days;
+            }
+            if (s === "line_graph") {
+              const more = Math.abs(vals[1] - vals[4]);
+              q.prompt = `On the line graph, what is the difference between Tuesday and Friday?`;
+              q.answer = more;
+            }
+            if (s === "mean_mode_range") {
+              const arr = [2, 4, 4, 6, 9].map((x) => x + rnd(0, 2));
+              q.type = "mcq";
+              q.prompt = `For data ${arr.join(", ")}, what is the range?`;
+              q.answer = Math.max(...arr) - Math.min(...arr);
+              q.options = mcq(q.answer, [
+                q.answer + 1,
+                q.answer - 1,
+                Math.round(arr.reduce((a, b) => a + b) / arr.length),
+              ]);
+            }
+            if (s === "comparison_data") {
+              q.prompt = `From the chart, how many crystals were collected altogether?`;
+              q.answer = vals.reduce((a, b) => a + b, 0);
+            }
+          }
+          if (!q.options.length && q.type === "mcq")
+            q.options = mcq(q.answer, [
+              Number(q.answer) + 1,
+              Number(q.answer) - 1,
+              Number(q.answer) + 10,
+            ]);
+          return q;
+        },
+        selfTest() {
+          let failures = 0;
+          for (let i = 0; i < 50; i++) {
+            const t = pick(TOPICS),
+              s = pick(t.subs),
+              q = this.gen(t.id, s, 3);
+            try {
+              if (q.answer === undefined || q.prompt.length < 5) failures++;
+            } catch (e) {
+              failures++;
+            }
+          }
+          if (failures)
+            console.warn("Question self-test found issues:", failures);
+          else
+            console.info(
+              "Question self-test passed: 50 random questions validated.",
+            );
+        },
+      };
+      const AdaptiveEngine = {
+        selectSession(topicId, count = 8) {
+          const st = StateManager.state,
+            t = TOPICS.find((x) => x.id === topicId),
+            subs = t.subs
+              .map((s) => ({ s, rec: st.subSkills[topicId + "." + s] }))
+              .sort((a, b) => b.rec.struggleScore - a.rec.struggleScore);
+          const top = subs.slice(0, 3),
+            mid = subs.slice(3, -2),
+            low = subs.slice(-2);
+          const qs = [];
+          for (let i = 0; i < count; i++) {
+            const bucket =
+              i < count * 0.6
+                ? top
+                : i < count * 0.9
+                  ? mid.length
+                    ? mid
+                    : subs
+                  : low;
+            const sub = pick(bucket.length ? bucket : subs).s;
+            let diff = clamp(
+              st.skillLevels[topicId] + (Math.random() - 0.5),
+              1,
+              5,
+            );
+            if (st.boost && st.boost > 0) {
+              diff = clamp(diff - 1, 1, 5);
+              st.boost--;
+            }
+            qs.push(QuestionBank.make(topicId, sub, diff));
+          }
+          return qs;
+        },
+        log(q, correct, time, hints, attempts) {
+          const st = StateManager.state,
+            k = q.subSkillId,
+            rec = st.subSkills[k];
+          const entry = {
+            topicId: q.topicId,
+            subSkillId: k,
+            difficulty: q.difficulty,
+            correct,
+            timeSeconds: time,
+            hintsUsed: hints,
+            attempts,
+            timestamp: now(),
+            question: q.prompt,
+            answer: String(q.answer),
+          };
+          st.logs.push(entry);
+          rec.attempts.push(entry);
+          rec.lastSeen = now();
+          rec.wrongStreak = correct ? 0 : (rec.wrongStreak || 0) + 1;
+          if (!correct)
+            rec.examples = [entry, ...(rec.examples || [])].slice(0, 3);
+          const last = rec.attempts.slice(-5),
+            acc = last.filter((a) => a.correct).length / last.length,
+            expected = EXP[q.expected] || 45,
+            nTime = clamp(time / expected - 1, 0, 2) / 2,
+            hRate = hints / 3;
+          rec.struggleScore = +(
+            (1 - acc) * 0.5 +
+            nTime * 0.3 +
+            hRate * 0.2
+          ).toFixed(2);
+          rec.mastered = rec.attempts.length >= 4 && rec.struggleScore < 0.18;
+          const old = st.skillLevels[q.topicId];
+          st.skillLevels[q.topicId] = +clamp(
+            old + (correct ? 0.08 : -0.04) + (hints ? -0.01 * hints : 0),
+            0,
+            5,
+          ).toFixed(1);
+          st.player.totalPlayTimeSeconds += time;
+          st.timeByTopic[q.topicId].total += time;
+          st.timeByTopic[q.topicId].week += time;
+          st.chapterCounts[q.topicId] = (st.chapterCounts[q.topicId] || 0) + 1;
+          StateManager.save();
+          return rec;
+        },
+        diagnosticUpdate(topicId, correct, diff) {
+          const st = StateManager.state;
+          st.skillLevels[topicId] = +clamp(
+            st.skillLevels[topicId] +
+              (correct ? 0.7 : -0.55) +
+              (diff - 3) * 0.1,
+            0,
+            5,
+          ).toFixed(1);
+          StateManager.save();
+        },
+      };
+      const Sound = {
+        ctx: null,
+        tone(freq = 660, type = "sine") {
+          if (!StateManager.state.settings.soundOn) return;
+          this.ctx =
+            this.ctx ||
+            new (window.AudioContext || window.webkitAudioContext)();
+          const o = this.ctx.createOscillator(),
+            g = this.ctx.createGain();
+          o.type = type;
+          o.frequency.value = freq;
+          o.connect(g);
+          g.connect(this.ctx.destination);
+          g.gain.setValueAtTime(0.001, this.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(
+            0.08,
+            this.ctx.currentTime + 0.02,
+          );
+          g.gain.exponentialRampToValueAtTime(
+            0.001,
+            this.ctx.currentTime + 0.24,
+          );
+          o.start();
+          o.stop(this.ctx.currentTime + 0.26);
+        },
+      };
+      const StoryEngine = {
+        scene(topic) {
+          return [
+            `Vexel the Number-Eater has breathed cold mist over ${topic.realm}.`,
+            `Master Aleph lifts his lantern. “Muntaha, young apprentice, this realm needs your ${topic.short} magic.”`,
+            `Restore the light, earn the ${topic.reward}, and one more shadow will leave Numeria.`,
+          ];
+        },
+        mid(topic) {
+          return `A hidden rune glows! ${topic.icon} The path twists, but your growing power keeps it open.`;
+        },
+        lesson(sub) {
+          const name = title(sub.split(".").pop());
+          return {
+            title: `The Wizard's Lesson: ${name}`,
+            html: `<p><b>Master Aleph:</b> Come, let me show you the way. Magic becomes clear when we see it.</p>${this.lessonVisual(sub)}<h3>Worked example</h3><ol><li>Notice what the question is asking.</li><li>Choose the matching operation or model.</li><li>Check if the answer makes sense.</li></ol><div class="hint">Guided practice: answer the next two gentler questions. I shall stand beside you.</div>`,
+          };
+        },
+        lessonVisual(sub) {
+          if (sub.includes("rounding"))
+            return `<div class="visual"><svg viewBox="0 0 520 130"><line x1="40" y1="80" x2="480" y2="80" stroke="#32174f" stroke-width="5"/><g fill="#32174f"><text x="35" y="110">230</text><text x="450" y="110">240</text></g><circle cx="265" cy="80" r="14" fill="#4fb3bf"><animate attributeName="cx" values="265;480" dur="1.4s" repeatCount="indefinite"/></circle><text x="125" y="35" fill="#32174f">5 or more snaps up ✨</text></svg></div>`;
+          if (sub.includes("multiplication"))
+            return `<div class="visual"><pre style="font-size:1.3rem;text-align:center">  786\n×  45\n-----\n 3930  (786×5)\n31440  (786×40)\n-----\n35370</pre></div>`;
+          if (sub.includes("equivalent") || sub.includes("improper"))
+            return `<div class="visual"><svg viewBox="0 0 520 120"><rect x="30" y="30" width="200" height="45" fill="#79c7e3"/><line x1="130" y1="30" x2="130" y2="75" stroke="#fff" stroke-width="4"/><rect x="290" y="30" width="200" height="45" fill="#79c7e3"/><g stroke="#fff" stroke-width="3"><line x1="340" y1="30" x2="340" y2="75"/><line x1="390" y1="30" x2="390" y2="75"/><line x1="440" y1="30" x2="440" y2="75"/></g><text x="50" y="105">1/2</text><text x="330" y="105">2/4: same size!</text></svg></div>`;
+          if (sub.includes("angle"))
+            return `<div class="visual">${UI.angleSvg(70)}</div>`;
+          return `<div class="visual"><p>Picture the problem, mark the important numbers, and solve one step at a time.</p></div>`;
+        },
+      };
+      const UI = {
+        current: null,
+        session: null,
+        diag: null,
+        timer: null,
+        qStart: 0,
+        paused: false,
+        pauseAccum: 0,
+        pauseAt: 0,
+        route(id) {
+          $$(".screen").forEach((s) => s.classList.remove("active"));
+          $("#" + id).classList.add("active");
+          $("#portal").classList.add("spin");
+          setTimeout(() => $("#portal").classList.remove("spin"), 780);
+          this["render" + id[0].toUpperCase() + id.slice(1)]?.();
+        },
+        saved() {
+          const s = $("#saved");
+          s.classList.add("show");
+          clearTimeout(this.savedT);
+          this.savedT = setTimeout(() => s.classList.remove("show"), 900);
+        },
+        top(title) {
+          return `<div class="topbar"><div class="pill">${title}</div><div><button class="btn ghost" onclick="UI.route('spellbook')">Spellbook</button><button class="btn ghost" onclick="UI.route('settings')">Settings</button></div></div>`;
+        },
+        renderHome() {
+          $("#home").innerHTML =
+            `<div class="hero"><h1>The Dragon's Spell</h1><h2>Muntaha's Quest</h2><p class="subtitle">Vexel the Number-Eater has frozen Numeria. Only a brave wizard's apprentice can restore the eight realms of math magic.</p><button class="btn" onclick="UI.start()">Begin Quest</button><button class="btn secondary" onclick="UI.route('settings')">Settings & Backup</button></div>`;
+        },
+        start() {
+          StateManager.state.diagnosticCompleted
+            ? this.route("map")
+            : this.startDiagnostic();
+        },
+        renderMap() {
+          const st = StateManager.state;
+          $("#map").innerHTML =
+            this.top(
+              `Wizard's Map • ${st.player.name} • Streak ${st.player.streak.count} 🔥`,
+            ) +
+            `<div class="map-head"><div><h2>Choose a Realm</h2><p class="subtitle" style="margin:0;text-align:left">${st.player.streak.grace ? "Master Aleph kept your magic safe while you were away. " : ""}${this.nudge()}</p></div><button class="btn" onclick="UI.startDiagnostic(true)">Start New Sorting Hat Ritual</button></div><div class="grid">${TOPICS.map((t) => this.realmCard(t)).join("")}</div><div class="panel card" style="margin-top:18px;text-align:center"><h2>Final Confrontation</h2><p>When you feel ready, face Vexel with one challenge from each realm.</p><button class="btn" onclick="UI.finalBattle()">Face Vexel</button></div>`;
+        },
+        nudge() {
+          const low = TOPICS.slice().sort(
+            (a, b) =>
+              StateManager.state.skillLevels[a.id] -
+              StateManager.state.skillLevels[b.id],
+          )[0];
+          return `Master Aleph whispers, “The ${low.realm} are calling softly for help...”`;
+        },
+        realmCard(t) {
+          const lvl = StateManager.state.skillLevels[t.id],
+            dim = lvl < 2.2 ? "dim" : "";
+          return `<article class="card realm ${dim}" style="--glow:${t.color}88"><svg viewBox="0 0 320 130">${this.realmSvg(t)}</svg><h3>${t.icon} ${t.realm}</h3><p>${t.short} Power: <b>${lvl.toFixed(1)}/5</b></p><div class="levelbar"><span style="width:${(lvl / 5) * 100}%"></span></div><p class="small">Reward: ${t.reward}</p><button class="btn" onclick="UI.openChapter('${t.id}')">Enter Realm</button></article>`;
+        },
+        realmSvg(t) {
+          return `<defs><radialGradient id="g${t.id}"><stop stop-color="${t.color}"/><stop offset="1" stop-color="#2D1B4E"/></radialGradient></defs><circle cx="160" cy="65" r="50" fill="url(#g${t.id})" opacity=".9"/><text x="160" y="84" font-size="54" text-anchor="middle">${t.icon}</text><path d="M10 118Q80 80 150 112T310 104" fill="none" stroke="#FFD66B" stroke-width="5" opacity=".7"/>`;
+        },
+        openChapter(id) {
+          const t = TOPICS.find((x) => x.id === id);
+          $("#cutscene").innerHTML =
+            this.top(t.realm) +
+            `<div class="cutscene"><div class="card scene-art"><svg viewBox="0 0 420 260">${this.realmSvg(t)}<text x="210" y="230" text-anchor="middle" fill="#FFD66B" font-size="28">${t.realm}</text></svg></div><div class="card"><h2>${t.icon} ${t.realm}</h2>${StoryEngine.scene(
+              t,
+            )
+              .map(
+                (p) =>
+                  `<p class="subtitle" style="text-align:left;margin:12px 0">${p}</p>`,
+              )
+              .join(
+                "",
+              )}<button class="btn" onclick="UI.startSession('${id}')">Cast the First Spell</button><button class="btn secondary" onclick="UI.route('map')">Back to Map</button></div></div>`;
+          this.route("cutscene");
+        },
+        startSession(topicId, final = false, recheck = false) {
+          this.session = {
+            topicId,
+            queue: final
+              ? TOPICS.map((t) => QuestionBank.any(t.id, 3))
+              : recheck
+                ? this.recheck(topicId)
+                : AdaptiveEngine.selectSession(topicId, 8),
+            index: 0,
+            attempts: 1,
+            hints: 0,
+            corrects: 0,
+            started: Date.now(),
+            final,
+            recheck,
+          };
+          this.renderQuestion();
+        },
+        recheck(topicId) {
+          const st = StateManager.state,
+            t = TOPICS.find((x) => x.id === topicId);
+          return t.subs
+            .map((s) => ({
+              s,
+              r: st.subSkills[topicId + "." + s].struggleScore,
+            }))
+            .sort((a, b) => b.r - a.r)
+            .slice(0, 5)
+            .map((x) => QuestionBank.make(topicId, x.s, 3));
+        },
+        renderQuest() {},
+        renderQuestion() {
+          this.route("quest");
+          const q = this.session.queue[this.session.index];
+          this.current = q;
+          this.qStart = Date.now();
+          this.pauseAccum = 0;
+          this.session.attempts = 1;
+          this.session.hints = 0;
+          $("#quest").innerHTML =
+            `${this.questTop()}<div class="question-card" aria-live="polite"><p class="small">${TOPICS.find((t) => t.id === q.topicId).realm} • Spell ${this.session.index + 1}/${this.session.queue.length} • Difficulty ${Math.round(q.difficulty)}</p><div class="prompt">${q.prompt}</div>${this.visual(q)}<div id="answerArea">${this.answerUI(q)}</div><div id="hintBox"></div><div class="feedback" id="feedback"></div><button class="btn" onclick="UI.submit()">Cast Spell</button><button class="btn secondary" onclick="UI.hint()">Ask Master Aleph for a Hint</button></div>`;
+          this.timer = setInterval(() => this.tick(), 500);
+          this.tick();
+        },
+        questTop() {
+          return `<div class="topbar"><div class="pill" id="qtimer">⏳ 0s</div><div><button class="btn ghost" onclick="UI.pause()">Pause</button><button class="btn ghost" onclick="UI.endSession()">End Session</button></div></div>`;
+        },
+        tick() {
+          if (!this.paused && $("#qtimer"))
+            $("#qtimer").textContent = "⏳ " + this.elapsed() + "s";
+        },
+        elapsed() {
+          return Math.max(
+            0,
+            Math.round((Date.now() - this.qStart - this.pauseAccum) / 1000),
+          );
+        },
+        pause() {
+          this.paused = true;
+          this.pauseAt = Date.now();
+          $("#pauseCover").classList.add("show");
+        },
+        resume() {
+          if (this.paused) {
+            this.pauseAccum += Date.now() - this.pauseAt;
+            this.paused = false;
+            $("#pauseCover").classList.remove("show");
+          }
+        },
+        visual(q) {
+          if (!q.visual) return "";
+          if (q.visual.kind === "numberline") {
+            const n = q.visual.n,
+              u = q.visual.unit,
+              lo = Math.floor(n / u) * u,
+              hi = lo + u,
+              pos = ((n - lo) / u) * 420 + 50;
+            return `<div class="visual"><svg viewBox="0 0 540 120"><line x1="50" y1="70" x2="470" y2="70" stroke="#32174f" stroke-width="5"/><text x="45" y="105">${fmt(lo)}</text><text x="440" y="105">${fmt(hi)}</text><circle cx="${pos}" cy="70" r="13" fill="#4FB3BF"/><text x="200" y="34">Nearest ${fmt(u)}</text></svg></div>`;
+          }
+          if (q.visual.kind === "multiply")
+            return `<div class="visual"><pre style="font-size:1.25rem;text-align:center">${q.visual.x}\n× ${q.visual.y}\n────</pre></div>`;
+          if (q.visual.kind === "fraction")
+            return `<div class="visual">${this.fractionSvg(q.visual.num, q.visual.den)}</div>`;
+          if (q.visual.kind === "angle")
+            return `<div class="visual">${this.angleSvg(q.visual.angle)}</div>`;
+          if (q.visual.kind === "bar")
+            return `<div class="visual"><div class="bargraph">${q.visual.vals.map((v, i) => `<div class="bar" style="height:${v * 5}px"><span>${v}</span></div>`).join("")}</div><p style="display:flex;justify-content:space-around">${q.visual.labels.map((x) => `<b>${x}</b>`).join("")}</p></div>`;
+          return "";
+        },
+        fractionSvg(n, d) {
+          let cells = "";
+          for (let i = 0; i < d; i++)
+            cells += `<rect x="${20 + i * (460 / d)}" y="30" width="${460 / d - 2}" height="60" fill="${i < n ? "#79C7E3" : "#fff"}" stroke="#32174f"/>`;
+          return `<svg viewBox="0 0 500 120">${cells}<text x="250" y="112" text-anchor="middle">${n}/${d}</text></svg>`;
+        },
+        angleSvg(a) {
+          return `<svg class="protractor" viewBox="0 0 420 230"><path d="M40 190A170 170 0 0 1 380 190" fill="#fff7" stroke="#32174f" stroke-width="3"/><line x1="210" y1="190" x2="380" y2="190" stroke="#32174f" stroke-width="5"/><line class="angle-arm" style="transform:rotate(${-a}deg)" x1="210" y1="190" x2="380" y2="190" stroke="#E8B341" stroke-width="7"/><text x="210" y="110" text-anchor="middle" fill="#32174f" font-size="28">${a}°</text></svg>`;
+        },
+        answerUI(q) {
+          if (q.type === "mcq")
+            return `<div class="options">${q.options.map((o) => `<button class="choice" data-val="${o}" onclick="UI.single(this)">${o}</button>`).join("")}</div>`;
+          if (q.type === "multi")
+            return `<div class="options">${q.options.map((o) => `<button class="choice" data-val="${o}" aria-pressed="false" onclick="UI.toggle(this)">${o}</button>`).join("")}</div>`;
+          if (q.type === "order")
+            return `<p class="small">Tap tiles in the correct order.</p><div class="drag-list" id="source">${q.items.map((o) => `<button class="tile" data-val="${o}" onclick="UI.orderPick(this)">${o}</button>`).join("")}</div><h3>Your order</h3><div class="drag-list" id="ordered"></div>`;
+          return `<div class="input-row"><input id="answerInput" class="answer-input" autocomplete="off" inputmode="decimal" aria-label="Answer"></div>${this.numpad()}`;
+        },
+        numpad() {
+          return `<div class="numpad" aria-label="number pad">${["1", "2", "3", "4", "5", "6", "7", "8", "9", "/", "0", ".", "⌫"].map((x) => `<button onclick="UI.pad('${x}')">${x}</button>`).join("")}</div>`;
+        },
+        pad(x) {
+          const i = $("#answerInput");
+          if (!i) return;
+          if (x === "⌫") i.value = i.value.slice(0, -1);
+          else i.value += x;
+          i.focus();
+        },
+        single(b) {
+          $$(".choice").forEach((x) => x.classList.remove("selected"));
+          b.classList.add("selected");
+        },
+        toggle(b) {
+          b.classList.toggle("selected");
+          b.setAttribute("aria-pressed", b.classList.contains("selected"));
+        },
+        orderPick(b) {
+          $("#ordered").appendChild(b);
+        },
+        getAns(q) {
+          if (q.type === "mcq") return $(".choice.selected")?.dataset.val ?? "";
+          if (q.type === "multi")
+            return $$(".choice.selected").map((b) => b.dataset.val);
+          if (q.type === "order")
+            return $$("#ordered .tile").map((b) => b.dataset.val);
+          return $("#answerInput")?.value ?? "";
+        },
+        submit() {
+          const q = this.current,
+            ans = this.getAns(q);
+          const ok = q.validate
+            ? q.validate(ans)
+            : String(ans).replace(/,/g, "").trim() === String(q.answer);
+          if (ok) {
+            this.correct();
+          } else this.gentle();
+        },
+        correct() {
+          clearInterval(this.timer);
+          Sound.tone(880);
+          this.sparkles();
+          $("#feedback").innerHTML =
+            '<span class="good">Magnificent! Numeria grows brighter!</span>';
+          const rec = AdaptiveEngine.log(
+            this.current,
+            true,
+            this.elapsed(),
+            this.session.hints,
+            this.session.attempts,
+          );
+          this.session.corrects++;
+          setTimeout(() => this.next(rec), 900);
+        },
+        gentle() {
+          Sound.tone(260, "triangle");
+          this.session.hints = Math.min(3, this.session.hints + 1);
+          this.session.attempts++;
+          $("#feedback").innerHTML =
+            '<span class="gentle">Almost! The dragon’s mist is thick here. Let’s look again, apprentice.</span>';
+          this.hint();
+          if (this.session.attempts > 3) {
+            clearInterval(this.timer);
+            const rec = AdaptiveEngine.log(
+              this.current,
+              false,
+              this.elapsed(),
+              this.session.hints,
+              3,
+            );
+            $("#feedback").innerHTML +=
+              `<div class="hint">The spell reveals the answer: <b>${this.current.answer}</b>. We learn and grow.</div>`;
+            setTimeout(() => this.next(rec), 1500);
+          }
+        },
+        hint() {
+          const q = this.current,
+            h =
+              q.hints[Math.min(this.session.hints, q.hints.length - 1)] ||
+              q.hints[0];
+          $("#hintBox").innerHTML +=
+            `<div class="hint">Master Aleph whispers a clue: ${h}</div>`;
+        },
+        next(rec) {
+          if (
+            rec &&
+            rec.wrongStreak >= 2 &&
+            !this.session.recheck &&
+            !this.session.final
+          )
+            return this.learnMode(this.current.subSkillId);
+          this.session.index++;
+          if (this.session.index >= this.session.queue.length)
+            return this.sessionDone();
+          this.renderQuestion();
+        },
+        learnMode(sub) {
+          const l = StoryEngine.lesson(sub);
+          StateManager.state.subSkills[sub].wrongStreak = 0;
+          StateManager.state.boost = 2;
+          StateManager.save();
+          $("#modal").innerHTML =
+            `<div class="modal-box"><h2>${l.title}</h2>${l.html}<button class="btn" onclick="UI.closeModal(); UI.session.queue.splice(UI.session.index+1,0,QuestionBank.make('${sub.split(".")[0]}','${sub.split(".").slice(1).join(".")}',1),QuestionBank.make('${sub.split(".")[0]}','${sub.split(".").slice(1).join(".")}',1)); UI.session.index++; UI.renderQuestion();">I am ready, Master Aleph</button></div>`;
+          $("#modal").classList.add("show");
+        },
+        closeModal() {
+          $("#modal").classList.remove("show");
+        },
+        sessionDone() {
+          const t = TOPICS.find((x) => x.id === this.session.topicId);
+          const secs = Math.round((Date.now() - this.session.started) / 1000);
+          if (this.session.final) return this.finalDone();
+          if (
+            !this.session.recheck &&
+            (StateManager.state.chapterCounts[t.id] || 0) >= 25
+          )
+            return this.startRecheck(t);
+          if (this.session.recheck) return this.reward(t, secs);
+          $("#quest").innerHTML =
+            this.top("Session Complete") +
+            `<div class="hero"><h2>${StoryEngine.mid(t)}</h2><p class="subtitle">You solved ${this.session.corrects}/${this.session.queue.length} spells in ${secs}s.</p><button class="btn" onclick="UI.startSession('${t.id}')">Continue Chapter</button><button class="btn secondary" onclick="UI.route('map')">Return to Map</button></div>`;
+        },
+        startRecheck(t) {
+          const old = StateManager.state.skillLevels[t.id];
+          this.oldLevel = old;
+          $("#quest").innerHTML =
+            this.top("Reassessment Checkpoint") +
+            `<div class="hero"><h2>Boss Puzzle Gate</h2><p class="subtitle">Before the ${t.reward} awakens, Master Aleph offers five recheck spells from the mistiest skills.</p><button class="btn" onclick="UI.startSession('${t.id}',false,true)">Begin Recheck</button></div>`;
+        },
+        reward(t, secs) {
+          const st = StateManager.state;
+          if (!st.inventory.includes(t.reward)) st.inventory.push(t.reward);
+          if (!st.storyProgress.completedChapters.includes(t.chapter))
+            st.storyProgress.completedChapters.push(t.chapter);
+          StateManager.save();
+          Sound.tone(1040);
+          $("#quest").innerHTML =
+            this.top("Realm Restored") +
+            `<div class="hero"><h2>✨ ${t.reward} Earned!</h2><p class="subtitle">Your ${t.short} power grew to ${st.skillLevels[t.id].toFixed(1)}/5. A cliffhanger rune appears: Vexel is searching for the Royal Archive...</p><p>Total chapter time today: ${secs}s</p><button class="btn" onclick="UI.route('map')">Return to Wizard's Map</button></div>`;
+        },
+        endSession() {
+          StateManager.save();
+          this.route("map");
+        },
+        startDiagnostic(force = false) {
+          if (
+            force &&
+            !confirm(
+              "Begin a fresh 24-question Sorting Hat Ritual? Your progress stays safe.",
+            )
+          )
+            return;
+          this.diag = { topicIndex: 0, within: 0, diff: 3, results: {} };
+          TOPICS.forEach((t) => (this.diag.results[t.id] = []));
+          this.renderDiagnosticQuestion();
+        },
+        renderDiagnostic() {},
+        renderDiagnosticQuestion() {
+          this.route("diagnostic");
+          const t = TOPICS[this.diag.topicIndex],
+            q = QuestionBank.diagnostic(t.id, this.diag.diff);
+          this.current = q;
+          this.qStart = Date.now();
+          this.pauseAccum = 0;
+          $("#diagnostic").innerHTML =
+            this.questTop() +
+            `<div class="question-card"><h2>Sorting Hat Ritual</h2><p class="small">Topic ${this.diag.topicIndex + 1}/8 • Question ${this.diag.within + 1}/3 • ${t.short}</p><div class="prompt">${q.prompt}</div>${this.visual(q)}<div id="answerArea">${this.answerUI(q)}</div><div id="hintBox"></div><div class="feedback" id="feedback"></div><button class="btn" onclick="UI.submitDiagnostic()">Cast Diagnostic Spell</button></div>`;
+          this.timer = setInterval(() => this.tick(), 500);
+        },
+        submitDiagnostic() {
+          const q = this.current,
+            ans = this.getAns(q),
+            ok = q.validate
+              ? q.validate(ans)
+              : String(ans).replace(/,/g, "").trim() === String(q.answer);
+          clearInterval(this.timer);
+          AdaptiveEngine.diagnosticUpdate(q.topicId, ok, this.diag.diff);
+          this.diag.results[q.topicId].push(ok);
+          $("#feedback").innerHTML = ok
+            ? '<span class="good">The Sorting Hat glows!</span>'
+            : '<span class="gentle">The Sorting Hat makes a gentle note.</span>';
+          this.diag.diff = clamp(this.diag.diff + (ok ? 1 : -1), 1, 5);
+          this.diag.within++;
+          setTimeout(() => {
+            if (this.diag.within >= 3) {
+              this.diag.topicIndex++;
+              this.diag.within = 0;
+              this.diag.diff = 3;
+            }
+            if (this.diag.topicIndex >= TOPICS.length) {
+              StateManager.state.diagnosticCompleted = true;
+              StateManager.save();
+              this.route("map");
+            } else this.renderDiagnosticQuestion();
+          }, 650);
+        },
+        finalBattle() {
+          this.startSession(TOPICS[0].id, true, false);
+        },
+        finalDone() {
+          const name = StateManager.state.player.name;
+          $("#quest").innerHTML =
+            this.top("Final Confrontation") +
+            `<div class="hero"><h1>Vexel's Curse Breaks!</h1><p class="subtitle">${name}, every correct spell sent light back into a realm. Master Aleph bows proudly: “Numeria shall remember the apprentice who chose courage and practice.”</p><button class="btn" onclick="UI.route('map')">Celebrate on the Map</button></div>`;
+        },
+        renderSettings() {
+          const st = StateManager.state;
+          $("#settings").innerHTML =
+            this.top("Settings") +
+            `<div class="panel card"><h2>Settings & Backup</h2><label>Player name <input class="answer-input" id="pname" value="${st.player.name}"></label><p><label><input type="checkbox" id="sound" ${st.settings.soundOn ? "checked" : ""}> Sound magic on</label></p><p><label>Parent passcode <input class="answer-input" id="pass" value="${st.settings.parentPasscode}" type="password"></label></p><button class="btn" onclick="UI.saveSettings()">Save Settings</button><button class="btn secondary" onclick="StateManager.export()">Export Progress</button><label class="btn secondary">Import Progress <input type="file" accept="application/json" style="display:none" onchange="StateManager.import(this.files[0])"></label><hr><h3>Parent Dashboard</h3><input class="answer-input" id="parentCode" placeholder="Enter passcode"><button class="btn" onclick="ParentDashboard.open()">Open Dashboard</button></div>`;
+        },
+        saveSettings() {
+          const st = StateManager.state;
+          st.player.name = $("#pname").value || "Muntaha";
+          st.settings.soundOn = $("#sound").checked;
+          st.settings.parentPasscode = $("#pass").value || "4321";
+          StateManager.save();
+          this.route("map");
+        },
+        renderSpellbook() {
+          const st = StateManager.state;
+          $("#spellbook").innerHTML =
+            this.top("Spellbook") +
+            `<div class="panel"><h2>${st.player.name}'s Spellbook</h2><div class="spellbook"><div class="card"><h3>Inventory</h3>${st.inventory.length ? st.inventory.map((i) => `<span class="badge">${i}</span>`).join("") : "<p>No relics yet. The first one waits in the Crystal Caves.</p>"}</div><div class="card"><h3>Power Radar</h3>${ParentDashboard.radar()}</div><div class="card"><h3>Mastered Skills</h3>${
+              Object.entries(st.subSkills)
+                .filter(([, v]) => v.mastered)
+                .slice(0, 20)
+                .map(
+                  ([k]) =>
+                    `<span class="badge">${title(k.split(".")[1])}</span>`,
+                )
+                .join("") || "Keep practicing; mastery sparks soon."
+            }</div></div></div>`;
+        },
+        sparkles() {
+          for (let i = 0; i < 22; i++) {
+            const e = document.createElement("i");
+            e.className = "sparkle";
+            e.style.left = innerWidth / 2 + rnd(-120, 120) + "px";
+            e.style.top = innerHeight / 2 + rnd(-80, 80) + "px";
+            e.style.setProperty("--dx", rnd(-180, 180) + "px");
+            e.style.setProperty("--dy", rnd(-180, 80) + "px");
+            document.body.appendChild(e);
+            setTimeout(() => e.remove(), 850);
+          }
+        },
+      };
+      const ParentDashboard = {
+        open(secret = false) {
+          if (
+            !secret &&
+            $("#parentCode")?.value !==
+              StateManager.state.settings.parentPasscode
+          ) {
+            alert("Master Aleph keeps this dashboard for parents.");
+            return;
+          }
+          const st = StateManager.state,
+            top = Object.entries(st.subSkills)
+              .sort((a, b) => b[1].struggleScore - a[1].struggleScore)
+              .slice(0, 3);
+          $("#modal").innerHTML =
+            `<div class="modal-box"><h2>Parent Dashboard</h2><div class="grid"><div class="card"><h3>Skill Levels</h3>${this.radar()}</div><div class="card"><h3>Time by Topic</h3>${TOPICS.map((t) => `<p>${t.short}: ${Math.round(st.timeByTopic[t.id].total / 60)} min total / ${Math.round(st.timeByTopic[t.id].week / 60)} min this week</p>`).join("")}</div><div class="card"><h3>Top 3 Struggle Sub-skills Right Now</h3>${top.map(([k, v]) => `<p><b>${title(k)}</b> — score ${v.struggleScore}<br><span class="small">Example: ${(v.examples && v.examples[0]?.question) || "No missed example yet."}</span></p>`).join("")}</div><div class="card"><h3>Accuracy Trend (7 days)</h3>${this.trend()}</div><div class="card"><h3>Suggested Offline Activities</h3><ul><li>For fractions: cook together and ask, “If we use 2/3, how much is left?”</li><li>For place value: read car number plates and name each digit's place.</li><li>For data: make a family fruit bar chart after dinner.</li></ul></div><div class="card"><h3>Mastered</h3>${
+              Object.entries(st.subSkills)
+                .filter(([, v]) => v.mastered)
+                .map(([k]) => `<span class="badge">${title(k)}</span>`)
+                .join("") || "None yet."
+            }</div></div><button class="btn secondary" onclick="UI.closeModal()">Close</button><button class="btn danger" onclick="if(confirm('Reset all progress?')) StateManager.reset()">Reset Progress</button></div>`;
+          $("#modal").classList.add("show");
+        },
+        radar() {
+          const vals = TOPICS.map(
+              (t) => StateManager.state.skillLevels[t.id] / 5,
+            ),
+            cx = 180,
+            cy = 165,
+            r = 115,
+            pts = vals
+              .map((v, i) => {
+                const a = -Math.PI / 2 + (i * 2 * Math.PI) / vals.length;
+                return [cx + Math.cos(a) * r * v, cy + Math.sin(a) * r * v];
+              })
+              .map((p) => p.join(","))
+              .join(" ");
+          const axes = TOPICS.map((t, i) => {
+            const a = -Math.PI / 2 + (i * 2 * Math.PI) / TOPICS.length,
+              x = cx + Math.cos(a) * r,
+              y = cy + Math.sin(a) * r,
+              lx = cx + Math.cos(a) * (r + 32),
+              ly = cy + Math.sin(a) * (r + 32);
+            return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#5B3A8C55"/><text x="${lx}" y="${ly}" text-anchor="middle" font-size="11" fill="#241435">${TOPICS[i].short.split(" ")[0]}</text>`;
+          }).join("");
+          return `<svg class="radar" viewBox="0 0 360 330"><polygon points="${pts}" fill="#4FB3BF88" stroke="#2D1B4E" stroke-width="3"/>${axes}<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#E8B341"/></svg>`;
+        },
+        trend() {
+          const logs = StateManager.state.logs.slice(-60),
+            days = [6, 5, 4, 3, 2, 1, 0].map((d) => {
+              const dt = new Date();
+              dt.setDate(dt.getDate() - d);
+              return dt.toDateString();
+            });
+          const rates = days.map((day) => {
+            const l = logs.filter(
+              (x) => new Date(x.timestamp).toDateString() === day,
+            );
+            return l.length
+              ? l.filter((x) => x.correct).length / l.length
+              : 0.5;
+          });
+          const pts = rates
+            .map((v, i) => `${30 + i * 45},${130 - v * 100}`)
+            .join(" ");
+          return `<svg class="linechart" viewBox="0 0 330 155"><polyline points="${pts}" fill="none" stroke="#4FB3BF" stroke-width="4"/><line x1="25" y1="130" x2="310" y2="130" stroke="#32174f"/><text x="20" y="25" fill="#241435">100%</text><text x="20" y="135" fill="#241435">0%</text></svg>`;
+        },
+      };
+      $("#pauseCover").addEventListener("click", () => UI.resume());
+      let taps = [];
+      $("#alephBtn").addEventListener("click", () => {
+        const t = Date.now();
+        taps = taps.filter((x) => t - x < 3000);
+        taps.push(t);
+        if (taps.length >= 5) {
+          taps = [];
+          ParentDashboard.open(true);
+        }
+      });
+      StateManager.load();
+      QuestionBank.selfTest();
+      UI.renderHome();
+    </script>
+  </body>
+</html>
